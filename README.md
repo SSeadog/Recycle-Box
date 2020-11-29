@@ -1,4 +1,4 @@
-# RECYLE-ROBOT
+# RECYLE-Box
 
 ![테스트](https://user-images.githubusercontent.com/58541838/100490861-640c0f00-3162-11eb-957c-3499ebdd38a3.gif)
 
