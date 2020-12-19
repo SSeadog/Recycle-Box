@@ -3,7 +3,7 @@
 import cv2
 import subprocess
 
-capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+capture = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 capture.set(cv2.CAP_PROP_FRAME_WIDTH, 416)
 capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 416)
 

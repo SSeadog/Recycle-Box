@@ -1,4 +1,5 @@
 #include <Adafruit_PWMServoDriver.h>
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 #define SERVOMIN 150
 #define SERVOMAX 600
@@ -7,7 +8,6 @@
 #define SERVO_FREQ 50
 uint8_t servonum = 0;
  
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 int trigPin = 12;
 int echoPin = 11;
@@ -17,19 +17,20 @@ char kind;
 
 // 모터 돌리는 함수
 
-void moveTo(char n) {
+void mv(char n) {
   if(n == '1') {
-    moveTo1();
+    move1();
   } else if(n == '2') {
-    moveTo2();
+    move2();
   } else if(n == '3') {
-    moveTo3();
+    move3();
   } else {
-    moveTo4();
+    move4();
   }
 }
 
-void moveTo1() { //1번째 칸에 버리는 기준
+void move1() { //1번째 칸에 버리는 기준
+
   for(uint16_t pulselen = 275; pulselen < 480; pulselen+=2) { // 오른쪽 버리기
     pwm.setPWM(0, 0, pulselen);
     delay(1);
@@ -58,8 +59,8 @@ void moveTo1() { //1번째 칸에 버리는 기준
   pwm.setPWM(2, 0, 4096);
 }
 
-void moveTo2() { //2번째 칸에 버리는 기준
-  for(uint16_t pulselen = 275; pulselen < 480; pulselen+=2) { // 오른쪽 버리기
+void move2() { //2번째 칸에 버리는 기준
+  for(uint16_t pulselen = 275; pulselen < 480; pulselen++) { // 오른쪽 버리기
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
@@ -87,7 +88,7 @@ void moveTo2() { //2번째 칸에 버리는 기준
   pwm.setPWM(2, 0, 4096);
 }
 
-void moveTo3() { //3번째 칸에 버리는 기준
+void move3() { //3번째 칸에 버리는 기준
   for(uint16_t pulselen = 275; pulselen > 60; pulselen-=2) { // 왼쪽 버리기
     pwm.setPWM(0, 0, pulselen);
     delay(1);
@@ -116,29 +117,35 @@ void moveTo3() { //3번째 칸에 버리는 기준
   pwm.setPWM(1, 0, 4096);
 }
 
-void moveTo4() { //4번째 칸에 버리는 기준
-  for(uint16_t pulselen = 275; pulselen > 60; pulselen-=2) { // 왼쪽 버리기
+void move4() { //4번째 칸에 버리는 기준
+  for(uint16_t pulselen = 275; pulselen < 550; pulselen+=4) { //흔들기
+    pwm.setPWM(0, 0, pulselen);
+  }
+  
+  delay(200);
+  
+  for(uint16_t pulselen = 550; pulselen > 80; pulselen-=4) { // 왼쪽 버리기
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
   
-  delay(200);
+  delay(700);
 
-  for(uint16_t pulselen = 60; pulselen < 275; pulselen++) { // 왼쪽 돌아오기
+  for(uint16_t pulselen = 80; pulselen < 275; pulselen++) { // 왼쪽 돌아오기
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
   pwm.setPWM(0, 0, 4096);
   delay(150);
   
-  for(uint16_t pulselen = 430; pulselen > 190; pulselen--) { // 왼쪽 버리기
+  for(uint16_t pulselen = 430; pulselen > 130; pulselen--) { // 왼쪽 버리기
     pwm.setPWM(1, 0, pulselen);
     delay(1);
   }
 
   delay(1000);
 
-  for(uint16_t pulselen = 190; pulselen < 430; pulselen++) { // 왼쪽 돌아오기
+  for(uint16_t pulselen = 130; pulselen < 430; pulselen++) { // 왼쪽 돌아오기
     pwm.setPWM(1, 0, pulselen);
     delay(1);
   }
@@ -153,19 +160,19 @@ void setup() {
   pwm.setPWMFreq(SERVO_FREQ);
   delay(10);
 
-  pwm.setPWM(0, 0, 4096);
+//  pwm.setPWM(0, 0, 4096);
   pwm.setPWM(1, 0, 4096);
   pwm.setPWM(2, 0, 4096);
   
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
-  
   st1 = true;
   st2 = false;
   st3 = false;
 }
 
 void loop() {
+  String result;
   if(st1) {
     long duration, distance;
     digitalWrite(trigPin, LOW);
@@ -176,11 +183,16 @@ void loop() {
     duration = pulseIn(echoPin, HIGH);
     distance = 17 * duration / 1000;
     
+    Serial.println(distance);
     if((distance <= 20) == true) {
+      pwm.setPWM(0, 0, 275);
+      delay(500);
+      pwm.setPWM(0, 0, 4096);
       Serial.println("1");
       st2 = true;
       st1 = false;
     }
+    // Serial.println("9");
   }
   if(st2) {
     if(Serial.available()) {
@@ -191,14 +203,17 @@ void loop() {
       st3_cnt = 0;
       st2 = false;
     }
+    // Serial.println("값 받음");  
       
   }
+    // Serial.println("2");
   
   if(st3) {
+    // 모터 돌리는 함수 넣기
     Serial.println("motor");
-    moveTo(kind);
+    mv(kind);
     st3 = false;
     st1 = true;
   }
-    delay(100);
+    delay(50);
 }
