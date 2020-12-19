@@ -7,7 +7,6 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define USMAX 2400
 #define SERVO_FREQ 50
 uint8_t servonum = 0;
- 
 
 int trigPin = 12;
 int echoPin = 11;
@@ -17,153 +16,183 @@ char kind;
 
 // 모터 돌리는 함수
 
-void mv(char n) {
-  if(n == '1') {
+void mv(char n)
+{
+  if (n == '1')
+  {
     move1();
-  } else if(n == '2') {
+  }
+  else if (n == '2')
+  {
     move2();
-  } else if(n == '3') {
+  }
+  else if (n == '3')
+  {
     move3();
-  } else {
+  }
+  else
+  {
     move4();
   }
 }
 
-void move1() { //1번째 칸에 버리는 기준
+void move1()
+{ //1번째 칸에 버리는 기준
 
-  for(uint16_t pulselen = 275; pulselen < 480; pulselen+=2) { // 오른쪽 버리기
+  for (uint16_t pulselen = 275; pulselen < 480; pulselen += 2)
+  {
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
-  
+
   delay(200);
 
-  for(uint16_t pulselen = 480; pulselen > 275; pulselen--) { // 오른쪽 돌아오기
+  for (uint16_t pulselen = 480; pulselen > 275; pulselen--)
+  {
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
   pwm.setPWM(0, 0, 4096);
   delay(150);
-  
-  for(uint16_t pulselen = 220; pulselen < 490; pulselen++) { // 오른쪽 버리기
+
+  for (uint16_t pulselen = 220; pulselen < 490; pulselen++)
+  {
     pwm.setPWM(2, 0, pulselen);
     delay(1);
   }
 
   delay(600);
 
-  for(uint16_t pulselen = 490; pulselen > 220; pulselen--) { // 오른쪽 돌아오기
+  for (uint16_t pulselen = 490; pulselen > 220; pulselen--)
+  {
     pwm.setPWM(2, 0, pulselen);
     delay(1);
   }
   pwm.setPWM(2, 0, 4096);
 }
 
-void move2() { //2번째 칸에 버리는 기준
-  for(uint16_t pulselen = 275; pulselen < 480; pulselen++) { // 오른쪽 버리기
+void move2()
+{ //2번째 칸에 버리는 기준
+  for (uint16_t pulselen = 275; pulselen < 480; pulselen++)
+  {
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
-  
+
   delay(200);
 
-  for(uint16_t pulselen = 480; pulselen > 275; pulselen--) { // 오른쪽 돌아오기
+  for (uint16_t pulselen = 480; pulselen > 275; pulselen--)
+  {
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
   pwm.setPWM(0, 0, 4096);
   delay(150);
-  
-  for(uint16_t pulselen = 220; pulselen > 60; pulselen--) { // 왼쪽 버리기
+
+  for (uint16_t pulselen = 220; pulselen > 60; pulselen--)
+  {
     pwm.setPWM(2, 0, pulselen);
     delay(2);
   }
 
   delay(1000);
 
-  for(uint16_t pulselen = 60; pulselen < 220; pulselen++) { // 왼쪽 돌아오기
+  for (uint16_t pulselen = 60; pulselen < 220; pulselen++)
+  {
     pwm.setPWM(2, 0, pulselen);
     delay(1);
   }
   pwm.setPWM(2, 0, 4096);
 }
 
-void move3() { //3번째 칸에 버리는 기준
-  for(uint16_t pulselen = 275; pulselen > 60; pulselen-=2) { // 왼쪽 버리기
+void move3()
+{ //3번째 칸에 버리는 기준
+  for (uint16_t pulselen = 275; pulselen > 60; pulselen -= 2)
+  {
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
-  
+
   delay(200);
 
-  for(uint16_t pulselen = 60; pulselen < 275; pulselen++) { // 왼쪽 돌아오기
+  for (uint16_t pulselen = 60; pulselen < 275; pulselen++)
+  {
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
   pwm.setPWM(0, 0, 4096);
   delay(150);
-  
-  for(uint16_t pulselen = 430; pulselen < 540; pulselen++) { // 오른쪽 버리기
+
+  for (uint16_t pulselen = 430; pulselen < 540; pulselen++)
+  {
     pwm.setPWM(1, 0, pulselen);
     delay(1);
   }
 
   delay(1000);
 
-  for(uint16_t pulselen = 540; pulselen > 430; pulselen--) { // 오른쪽 돌아오기
+  for (uint16_t pulselen = 540; pulselen > 430; pulselen--)
+  {
     pwm.setPWM(1, 0, pulselen);
     delay(1);
   }
   pwm.setPWM(1, 0, 4096);
 }
 
-void move4() { //4번째 칸에 버리는 기준
-  for(uint16_t pulselen = 275; pulselen < 550; pulselen+=4) { //흔들기
+void move4()
+{ //4번째 칸에 버리는 기준
+  for (uint16_t pulselen = 275; pulselen < 550; pulselen += 4)
+  {
     pwm.setPWM(0, 0, pulselen);
   }
-  
+
   delay(200);
-  
-  for(uint16_t pulselen = 550; pulselen > 80; pulselen-=4) { // 왼쪽 버리기
+
+  for (uint16_t pulselen = 550; pulselen > 80; pulselen -= 4)
+  {
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
-  
+
   delay(700);
 
-  for(uint16_t pulselen = 80; pulselen < 275; pulselen++) { // 왼쪽 돌아오기
+  for (uint16_t pulselen = 80; pulselen < 275; pulselen++)
+  {
     pwm.setPWM(0, 0, pulselen);
     delay(1);
   }
   pwm.setPWM(0, 0, 4096);
   delay(150);
-  
-  for(uint16_t pulselen = 430; pulselen > 130; pulselen--) { // 왼쪽 버리기
+
+  for (uint16_t pulselen = 430; pulselen > 130; pulselen--)
+  {
     pwm.setPWM(1, 0, pulselen);
     delay(1);
   }
 
   delay(1000);
 
-  for(uint16_t pulselen = 130; pulselen < 430; pulselen++) { // 왼쪽 돌아오기
+  for (uint16_t pulselen = 130; pulselen < 430; pulselen++)
+  {
     pwm.setPWM(1, 0, pulselen);
     delay(1);
   }
   pwm.setPWM(1, 0, 4096);
 }
 
-void setup() {
-  
+void setup()
+{
+
   Serial.begin(9600);
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
   pwm.setPWMFreq(SERVO_FREQ);
   delay(10);
 
-//  pwm.setPWM(0, 0, 4096);
+  pwm.setPWM(0, 0, 4096);
   pwm.setPWM(1, 0, 4096);
   pwm.setPWM(2, 0, 4096);
-  
+
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   st1 = true;
@@ -171,9 +200,11 @@ void setup() {
   st3 = false;
 }
 
-void loop() {
+void loop()
+{
   String result;
-  if(st1) {
+  if (st1)
+  {
     long duration, distance;
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
@@ -182,38 +213,36 @@ void loop() {
     digitalWrite(trigPin, LOW);
     duration = pulseIn(echoPin, HIGH);
     distance = 17 * duration / 1000;
-    
+
     Serial.println(distance);
-    if((distance <= 20) == true) {
+    if ((distance <= 20) == true)
+    {
       pwm.setPWM(0, 0, 275);
       delay(500);
       pwm.setPWM(0, 0, 4096);
-      Serial.println("1");
+      Serial.println("1"); // 물건이 들어왔다는 신호
       st2 = true;
       st1 = false;
     }
-    // Serial.println("9");
   }
-  if(st2) {
-    if(Serial.available()) {
-      kind = Serial.read(); // 여기서 캔이냐 플라스틱이냐가 결정됨
+  if (st2)
+  {
+    if (Serial.available())
+    {
+      kind = Serial.read(); // 물건의 종류
       Serial.read();
 
       st3 = true;
       st3_cnt = 0;
       st2 = false;
     }
-    // Serial.println("값 받음");  
-      
   }
-    // Serial.println("2");
-  
-  if(st3) {
-    // 모터 돌리는 함수 넣기
-    Serial.println("motor");
+
+  if (st3)
+  {
     mv(kind);
     st3 = false;
     st1 = true;
   }
-    delay(50);
+  delay(50);
 }
