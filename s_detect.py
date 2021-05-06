@@ -39,7 +39,7 @@ def detect(save_img=False):
                                                           exist_ok=True)  # make dir
 
     cnt = 0
-    mat = [0, 0, 0, 0, 0]  # can pls gls trsh
+    mat = [0, 0, 0, 0, 0]  # can pls gls trsh none
 
     # Initialize
     set_logging()
@@ -79,9 +79,10 @@ def detect(save_img=False):
     # run once
     _ = model(img.half() if half else img) if device.type != 'cpu' else None
     for path, img, im0s, vid_cap in dataset:
-        # readable을 통해 값을 받을 수 있으면
-        if ARD.readable():
-            cur = ARD.readline().decode().strip()
+        if ARD.readable(): # readable을 통해 값을 받을 수 있으면
+            cur = ARD.readline().decode().strip() # Serial로 받은 한 줄을 읽고
+            # 받은 값이 1이거나, cnt가 0이 아니면 카메라에 촬영된 한 프레임을 판별함.
+            # cnt는 0으로 관리하다가 Serial로 1을 받으면 1씩 증가시키고 들어온 물건을 판별했다고 판단되면 다시 cnt를 0으로 만듬
             if cur == "1" or cnt != 0:
 
                 cnt += 1
@@ -124,15 +125,14 @@ def detect(save_img=False):
                     img.shape[2:], det[:, :4], im0.shape).round()
 
                 # Print results
-                # det[:, -1]???? 무슨 의미지??
                 # 한 객체가 여러개 판별된 경우 문자로는 한번만 출력하기 위해 unique사용
                 for c in det[:, -1].unique():
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += '%g %ss, ' % (n, names[int(c)])  # add to string
-                    # 여기서 c에 판별된 클래스가 들어있음
-                    # 판별된 객체마다 카운트해줌 0 can 1 pls 2 gls
+                    # 여기서 c에 현재 프레임에 판별된 클래스가 들어있음
+                    # 판별된 객체마다 mat리스트에 카운트해줌 0인덱스는 can 1인덱스는 pls 2인덱스는 gls 3인덱스는 trsh
                     mat[int(c)] += 1
-            else:  # det이 None일 때 -> trsh 1 증가
+            else:  # det이 None일 때 -> 4(none)인덱스에 1증가
                 mat[4] += 1
 
                 # Write results
@@ -155,16 +155,11 @@ def detect(save_img=False):
                     # Print time (inference + NMS)
                     print('%sDone. (%.3fs)' % (s, t2 - t1))
 
-                    if cnt == 10:
+                    if cnt == 10: # 10프레임의 결과를 가지고
                         cnt = 0
                         # can, pls, gls, (trsh + none) 중 젤 많이 나온 것을 serial로 보냄
-                        # 나중에 값이 같은 경우도 고려해야 할듯
                         max_mat = -1
                         max_value = 0
-                        # for i, m in enumerate(mat):
-                        #     if m > max_value:
-                        #         max_value = m
-                        #         max_mat = i
                         for i in range(3):
                             if mat[i] > max_value:
                                 max_value = mat[i]
@@ -175,10 +170,12 @@ def detect(save_img=False):
                         print(mat)
                         for i in range(5):
                             mat[i] = 0
-                        # 여기서 serial로 max_mat 보내면 됨 0을 넘기면 아두이노에서 인식을 못함. 그래서 1을 더해서 넘겨주기로 함
+                        # 여기서 serial로 max_mat 전송. 0을 넘기면 아두이노에서 인식을 못함. 그래서 1을 더해서 넘겨주기로 함
                         ARD.write(str(max_mat+1).encode())
                         print("print", max_mat + 1)
 
+                    # 물건이 한번 들어왔을 때 10프레임이나 기다리는 건 비효율적이라 생각되어 0~3인덱스 중 하나라도 4번 이상 판별되면
+                    # 해당 번호의 물건으로 분류된다고 확신하고 값을 출력시킴
                     elif mat[0] >= 4 or mat[1] >= 4 or mat[2] >= 4 or mat[3] >= 4:
                         cnt = 0
                         max_mat = -1
